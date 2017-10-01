@@ -1,0 +1,23 @@
+{
+  "name": "e-reader-rest-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./src/**/*.test.js",
+    "start": "node ./src/server.js"
+  },
+  "keywords": [],
+  "author": "Hongfeng Xia",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.15.5",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.11.13"
+  },
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  }
+}
