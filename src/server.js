@@ -6,6 +6,7 @@ const cors = require('cors');
 const { mongoose } = require('./mongodb/mongoose');
 const { MemberInfo } = require('./models/member-info.model');
 const { User } = require('./models/user.model');
+const { authenticate } = require('./middleware/authenticate');
 
 var port = process.env.PORT || 3000;
 var app = express();
@@ -39,6 +40,10 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+app.get('/api/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+});
+
 app.post('/api/member', (req, res) => {
   var memberInfo = new MemberInfo(req.body);
   memberInfo.save().then((member) => {
@@ -49,7 +54,8 @@ app.post('/api/member', (req, res) => {
   });
 });
 
-app.get('/api/member/', (req, res) => {
+app.get('/api/member/', authenticate, (req, res) => {
+  console.log(req);
   if(_.isEmpty(req.query)) {
     MemberInfo.find({}).then(members => {
       res.send({ members });
