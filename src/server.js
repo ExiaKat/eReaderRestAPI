@@ -40,6 +40,17 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+app.post('/api/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  User.findByCredentials(body.email, body.password).then(user => {
+    return user.generateAuthToken().then(token => {
+      res.header("x-auth", token).send(user);
+    });
+  }).catch(err => {
+    res.status(401).send("Invalid email or password");
+  });
+});
+
 app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
