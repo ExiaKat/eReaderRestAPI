@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const { mongoose } = require('./mongodb/mongoose');
 const { MemberInfo } = require('./models/member-info.model');
+const { User } = require('./models/user.model');
 
 var port = process.env.PORT || 3000;
 var app = express();
@@ -20,8 +21,23 @@ app.use((req, res, next) => {
      .header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
+//to enable pre-flight across board
+app.options('*', cors());
 
 app.use(bodyParser.json());
+
+
+app.post('/api/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token)=> {
+    res.header("x-auth", token).send(user);
+  }).catch((err) => {
+    res.status(400).send(err.message);
+  });
+});
 
 app.post('/api/member', (req, res) => {
   var memberInfo = new MemberInfo(req.body);
