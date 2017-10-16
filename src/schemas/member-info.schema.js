@@ -8,7 +8,8 @@ var MemberSchema = new mongoose.Schema({
   memberNumber: String,
   parentName: {
     type: String,
-    required: true
+    required: true,
+    minlength: 1
   },
   mobile: {
     type: String,

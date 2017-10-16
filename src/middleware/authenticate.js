@@ -7,7 +7,6 @@ var authenticate = (req, res, next) => {
       return Promise.reject("User not found");
     req.user = user;
     req.token = token;
-    console.log(req);
     next();
   }).catch((err) => {
     res.status(401).send(err);

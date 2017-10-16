@@ -1,20 +1,32 @@
+var env = process.env.NODE_ENV || 'development';
+
+if (env === 'development') {
+  process.env.PORT = 3000;
+  process.env.MONGODB_URI = 'mongodb://localhost:27017/eReaderDB';
+} else if (env === 'test') {
+  process.env.PORT = 3000;
+  process.env.MONGODB_URI = 'mongodb://localhost:27017/eReaderDBTest';
+}
+
 const express = require('express');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 
 const { mongoose } = require('./mongodb/mongoose');
 const { MemberInfo } = require('./models/member-info.model');
 const { User } = require('./models/user.model');
 const { authenticate } = require('./middleware/authenticate');
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT;
 var app = express();
 
-app.use(express.static('public'));
-//use cors middleware to enable cross-domain access
-// app.use(cors());
+var staticFolderPath = path.join(__dirname, "../public");
+app.use(express.static(staticFolderPath));
 
+//uncomment following code to use cors middleware to enable cross-domain access
+// app.use(cors());
 
 //or use custom function to set response header to allow cross-domain access
 app.use((req, res, next) => {
@@ -22,12 +34,14 @@ app.use((req, res, next) => {
      .header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-//to enable pre-flight across board
+
+//to enable pre-flight across board using cors middleware
 app.options('*', cors());
 
+//parse request body to json
 app.use(bodyParser.json());
 
-
+//POST /api/users
 app.post('/api/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
@@ -40,6 +54,7 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+//POST /api/users/login
 app.post('/api/users/login', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   User.findByCredentials(body.email, body.password).then(user => {
@@ -51,10 +66,12 @@ app.post('/api/users/login', (req, res) => {
   });
 });
 
+//GET /api/users/me
 app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
 
+//POST /api/member
 app.post('/api/member', (req, res) => {
   var memberInfo = new MemberInfo(req.body);
   memberInfo.save().then((member) => {
@@ -65,8 +82,8 @@ app.post('/api/member', (req, res) => {
   });
 });
 
-app.get('/api/member/', authenticate, (req, res) => {
-  console.log(req);
+//GET /api/member
+app.get('/api/member', authenticate, (req, res) => {
   if(_.isEmpty(req.query)) {
     MemberInfo.find({}).then(members => {
       res.send({ members });
@@ -93,6 +110,7 @@ app.get('/api/member/', authenticate, (req, res) => {
   }
 });
 
+//PATCH /api/member/:id
 app.patch('/api/member/:id', (req, res) => {
   let id = req.params.id;
   MemberInfo.findByIdAndUpdate(id, {$set: req.body}, {new: true}).then((member) => {
@@ -104,6 +122,7 @@ app.patch('/api/member/:id', (req, res) => {
   .catch(err => res.status(400).send(err));
 });
 
+//DELETE /api/member/:id
 app.delete('/api/member/:id', (req, res) => {
   let id = req.params.id;
   MemberInfo.findByIdAndRemove(id).then(member => {
@@ -115,6 +134,9 @@ app.delete('/api/member/:id', (req, res) => {
   .catch(err => res.status(400).send(err));
 });
 
+//Start server on corresponding port
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 })
+
+module.exports = { app };
