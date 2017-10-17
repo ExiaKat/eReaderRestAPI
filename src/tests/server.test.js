@@ -148,6 +148,29 @@ describe('POST /api/users/login', () => {
 
 });
 
+describe('DELETE /api/users/logout', () => {
+
+  it('should remove token for the user when logout', done => {
+    request(app)
+      .delete('/api/users/logout')
+      .set('x-auth', token)
+      .expect(200)
+      .end((err, res) => {
+        User.findById(users[0]._id).then(usr => {
+          expect(usr.tokens.length).toBe(0);
+          done();
+        }, done);
+      });
+  });
+
+  it('should get status 400 if no token provide in x-auth header', done => {
+    request(app)
+      .delete('/api/users/logout')
+      .expect(401, done);
+  });
+
+});
+
 describe('GET /api/users/me', () => {
   it('should get valid user if authenticated', done => {
     request(app)

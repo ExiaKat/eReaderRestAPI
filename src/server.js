@@ -66,6 +66,16 @@ app.post('/api/users/login', (req, res) => {
   });
 });
 
+//DELETE /api/users/logout
+app.delete('/api/users/logout', authenticate, (req, res) => {
+  var _id = req.user._id;
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }).catch(err => {
+    res.status(400).send(err);
+  });
+});
+
 //GET /api/users/me
 app.get('/api/users/me', authenticate, (req, res) => {
   res.send(req.user);
