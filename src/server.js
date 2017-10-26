@@ -31,7 +31,8 @@ app.use(express.static(staticFolderPath));
 //or use custom function to set response header to allow cross-domain access
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*")
-     .header("Access-Control-Allow-Headers", "Content-Type");
+     .header("Access-Control-Allow-Headers", "Content-Type")
+     .header("Access-Control-Expose-Headers", "x-auth");
   next();
 });
 
@@ -123,7 +124,8 @@ app.get('/api/member', authenticate, (req, res) => {
 //PATCH /api/member/:id
 app.patch('/api/member/:id', (req, res) => {
   let id = req.params.id;
-  MemberInfo.findByIdAndUpdate(id, {$set: req.body}, {new: true}).then((member) => {
+  let body = _.omit(req.body, '_id');
+  MemberInfo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((member) => {
     if (!member) {
       return res.status(404).send("member is not found!");
     }

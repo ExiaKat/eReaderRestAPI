@@ -13,7 +13,10 @@ var BookSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  returnDate: Date
+  returnDate: Date,
+  notes: {
+    type: String
+  }
 });
 
 module.exports = { BookSchema };
