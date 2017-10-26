@@ -2,4 +2,4 @@
 /node_modules
 
 #public folder for static webpage
-/public
+#/public
