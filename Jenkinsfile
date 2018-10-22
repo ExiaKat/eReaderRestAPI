@@ -1,3 +1,3 @@
 node {
-  bat 'eReaderRestAPI'
+  bat 'echo eReaderRestAPI'
 }
