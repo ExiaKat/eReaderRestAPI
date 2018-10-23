@@ -5,6 +5,7 @@ pipeline {
             steps {
                 bat 'npm --version'
                 bat 'echo "Changes have been made"'
+                bat 'echo "Auto build"'
             }
         }
     }
