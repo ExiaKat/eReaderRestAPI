@@ -4,7 +4,7 @@ pipeline {
         stage('build') {
             steps {
                 bat 'npm --version'
-                bat 'Changes have been made'
+                bat 'echo "Changes have been made"'
             }
         }
     }
